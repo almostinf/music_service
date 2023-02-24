@@ -4,7 +4,7 @@ import (
 	"container/list"
 	"time"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type User struct {
