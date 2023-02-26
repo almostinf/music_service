@@ -5,22 +5,22 @@ import (
 	"gorm.io/gorm"
 )
 
-type UserRepository struct {
+type User struct {
 	*gorm.DB
 }
 
-func NewUserRepository(db *gorm.DB) *UserRepository {
-	return &UserRepository{db}
+func NewUserRepository(db *gorm.DB) *User {
+	return &User{db}
 }
 
-func (r *UserRepository) Get() []entity.User {
+func (r *User) Get() []entity.User {
 	var users []entity.User
 	r.Find(&users)
 	return users
 }
 
-func (r *UserRepository) Add(user *entity.User) (*entity.User, error) {
-	if err := r.Save(&user).Error; err != nil {
+func (r *User) Add(user *entity.User) (*entity.User, error) {
+	if err := r.Save(user).Error; err != nil {
 		return user, err
 	}
 	return user, nil

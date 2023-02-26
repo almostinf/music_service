@@ -8,13 +8,13 @@ import (
 
 type (
 	Config struct {
-		App `yaml:"app"`
+		App  `yaml:"app"`
 		HTTP `yaml:"http"`
-		PG `yaml:"postgres"`
+		PG   `yaml:"postgres"`
 	}
 
 	App struct {
-		Name string `env-required:"true" yaml:"name" env:"APP_NAME"`
+		Name    string `env-required:"true" yaml:"name" env:"APP_NAME"`
 		Version string `env-required:"true" yaml:"version" env:"APP_VERSION"`
 	}
 
@@ -23,7 +23,8 @@ type (
 	}
 
 	PG struct {
-		URL string `env-required:"true" env:"PG_URL"`
+		Dialect string `env-requered:"true" yaml:"dialect" env:"DIALECT"`
+		URL     string `env-required:"true" env:"PG_URL"`
 	}
 )
 

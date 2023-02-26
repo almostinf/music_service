@@ -9,8 +9,4 @@ type (
 		Get() []entity.User
 		Add(*entity.User) (*entity.User, error)
 	}
-
-	UserRepository interface {
-		User
-	}
 )

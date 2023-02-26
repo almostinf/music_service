@@ -5,30 +5,22 @@ import (
 	"gorm.io/gorm"
 )
 
-type SongRepository struct {
+type Song struct {
 	*gorm.DB
 }
 
-func NewSongRep(db *gorm.DB) *SongRepository {
-	return &SongRepository{db}
+func NewSongRepository(db *gorm.DB) *Song {
+	return &Song{db}
 }
 
-func (r *SongRepository) Get() []entity.Song {
+func (r *Song) Get() []entity.Song {
 	var songs []entity.Song
 	r.Find(&songs)
 	return songs
 }
 
-func (r *SongRepository) Add()
-
-func GetSongs(db *gorm.DB) []entity.Song {
-	var songs []entity.Song
-	db.Find(&songs)
-	return songs
-}
-
-func AddSong(db *gorm.DB, song *entity.Song) (*entity.Song, error) {
-	if err := db.Save(&song).Error; err != nil {
+func (r *Song) Add(song *entity.Song) (*entity.Song, error) {
+	if err := r.Save(song).Error; err != nil {
 		return song, err
 	}
 	return song, nil

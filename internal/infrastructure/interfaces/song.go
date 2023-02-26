@@ -9,8 +9,4 @@ type (
 		Get() []entity.Song
 		Add(entity.Song) (entity.Song, error)
 	}
-
-	SongRepository interface {
-		Song
-	}
 )

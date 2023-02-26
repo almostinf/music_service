@@ -4,3 +4,6 @@ app:
 
 http:
   port: '8080'
+
+postgres:
+  dialect: 'postgres'
