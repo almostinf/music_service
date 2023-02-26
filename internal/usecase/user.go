@@ -17,8 +17,8 @@ func (u *User) Get() []entity.User {
 	return u.repo.Get()
 }
 
-func (u *User) Add(user *entity.User) (*entity.User, error) {
-	user, err := u.repo.Add(user)
+func (u *User) Create(user *entity.User) (*entity.User, error) {
+	user, err := u.repo.Create(user)
 	if err != nil {
 		return nil, err
 	}

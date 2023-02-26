@@ -7,6 +7,6 @@ import (
 type (
 	Song interface {
 		Get() []entity.Song
-		Add(entity.Song) (entity.Song, error)
+		Create(entity.Song) (entity.Song, error)
 	}
 )

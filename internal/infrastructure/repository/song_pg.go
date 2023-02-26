@@ -19,8 +19,8 @@ func (r *Song) Get() []entity.Song {
 	return songs
 }
 
-func (r *Song) Add(song *entity.Song) (*entity.Song, error) {
-	if err := r.Save(song).Error; err != nil {
+func (r *Song) Create(song *entity.Song) (*entity.Song, error) {
+	if err := r.DB.Create(song).Error; err != nil {
 		return song, err
 	}
 	return song, nil

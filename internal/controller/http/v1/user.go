@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -49,7 +50,7 @@ func (r *userRoutes) add(c *gin.Context) {
 		return
 	}
 
-	user, err := r.u.Add(&entity.User{
+	user, err := r.u.Create(&entity.User{
 		Model:     gorm.Model{},
 		ID:        uuid.New().String(),
 		FirstName: request.FirstName,
@@ -62,7 +63,8 @@ func (r *userRoutes) add(c *gin.Context) {
 	})
 
 	if err != nil {
-		errorResponse(c, http.StatusInternalServerError, "user service problems")
+		errorResponse(c, http.StatusInternalServerError, fmt.Sprintf("user service problems: %s", err))
+		fmt.Println(user)
 		return
 	}
 

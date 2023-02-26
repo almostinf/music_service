@@ -14,7 +14,8 @@ type User struct {
 	LastName  string     `json:"last_name" gorm:"type:varchar(64)"`
 	Email     string     `json:"email" gorm:"unique;not null"`
 	Password  string     `json:"password" gorm:"not null"`
-	Playlists *list.List `json:"playlists" gorm:"foreignkey:CreatorID"`
+	Playlist  Playlist   `gorm:"foreignkey:Playlists"`
+	Playlists *list.List `json:"playlists"`
 	CreatedAt time.Time  `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt time.Time  `json:"updated_at" gorm:"autoUpdateTime:milli"`
 }

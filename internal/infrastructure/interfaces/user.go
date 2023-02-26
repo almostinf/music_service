@@ -7,6 +7,6 @@ import (
 type (
 	User interface {
 		Get() []entity.User
-		Add(*entity.User) (*entity.User, error)
+		Create(*entity.User) (*entity.User, error)
 	}
 )

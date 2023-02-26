@@ -19,8 +19,8 @@ func (r *User) Get() []entity.User {
 	return users
 }
 
-func (r *User) Add(user *entity.User) (*entity.User, error) {
-	if err := r.Save(user).Error; err != nil {
+func (r *User) Create(user *entity.User) (*entity.User, error) {
+	if err := r.DB.Create(user).Error; err != nil {
 		return user, err
 	}
 	return user, nil
