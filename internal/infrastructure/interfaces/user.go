@@ -8,5 +8,7 @@ type (
 	User interface {
 		Get() []entity.User
 		Create(*entity.User) (*entity.User, error)
+		Update(*entity.User) (*entity.User, error)
+		Delete(string) error
 	}
 )

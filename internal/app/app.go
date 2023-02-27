@@ -24,7 +24,7 @@ func Run(cfg *config.Config) {
 	user_rep := repository.NewUserRepository(db)
 
 	// UseCase
-	userUseCase := user_usecase.NewUserUseCase(*user_rep)
+	userUseCase := user_usecase.NewUser(*user_rep)
 
 	// HTTP Server
 	handler := gin.New()

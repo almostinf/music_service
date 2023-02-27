@@ -9,7 +9,7 @@ type User struct {
 	repo repository.User
 }
 
-func NewUserUseCase(r repository.User) *User {
+func NewUser(r repository.User) *User {
 	return &User{r}
 }
 
@@ -18,9 +18,13 @@ func (u *User) Get() []entity.User {
 }
 
 func (u *User) Create(user *entity.User) (*entity.User, error) {
-	user, err := u.repo.Create(user)
-	if err != nil {
-		return nil, err
-	}
-	return user, nil
+	return u.repo.Create(user)
+}
+
+func (u *User) Update(user *entity.User) (*entity.User, error) {
+	return u.repo.Update(user)
+}
+
+func (u *User) Delete(id string) error {
+	return u.repo.Delete(id)
 }
