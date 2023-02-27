@@ -1,4 +1,4 @@
-package http
+package usecase
 
 import (
 	"github.com/almostinf/music_service/internal/entity"

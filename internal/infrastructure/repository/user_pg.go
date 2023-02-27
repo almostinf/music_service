@@ -9,7 +9,7 @@ type User struct {
 	*gorm.DB
 }
 
-func NewUserRepository(db *gorm.DB) *User {
+func NewUser(db *gorm.DB) *User {
 	return &User{db}
 }
 
@@ -20,7 +20,10 @@ func (r *User) Get() []entity.User {
 }
 
 func (r *User) Create(user *entity.User) (*entity.User, error) {
-	if err := r.DB.First(&user, "id = ?", user.ID).Error; err != nil {
+	if err := r.DB.Migrator().HasTable(user); !err {
+		r.DB.Migrator().CreateTable(user)
+	}
+	if err := r.DB.First(user, "id = ?", user.ID).Error; err != nil {
 		if err := r.DB.Create(user).Error; err != nil {
 			return user, err
 		}

@@ -9,7 +9,7 @@ type Song struct {
 	*gorm.DB
 }
 
-func NewSongRepository(db *gorm.DB) *Song {
+func NewSong(db *gorm.DB) *Song {
 	return &Song{db}
 }
 
@@ -20,8 +20,37 @@ func (r *Song) Get() []entity.Song {
 }
 
 func (r *Song) Create(song *entity.Song) (*entity.Song, error) {
-	if err := r.DB.Create(song).Error; err != nil {
+	if err := r.DB.Migrator().HasTable(song); !err {
+		r.DB.Migrator().CreateTable(song)
+	}
+	if err := r.DB.First(song, "id = ?", song.ID).Error; err != nil {
+		if err := r.DB.Create(song).Error; err != nil {
+			return song, err
+		}
+		return song, nil
+	} else {
+		return song, err
+	}
+}
+
+func (r *Song) Update(song *entity.Song) (*entity.Song, error) {
+	var finded_song entity.Song
+	if err := r.DB.First(&finded_song, "id = ?", song.ID).Error; err != nil {
+		return song, err
+	}
+	if err := r.DB.Save(&song).Error; err != nil {
 		return song, err
 	}
 	return song, nil
+}
+
+func (r *Song) Delete(id string) error {
+	var song entity.Song
+	if err := r.DB.First(&song, "id = ?", id).Error; err != nil {
+		return err
+	}
+	if err := r.DB.Delete(&song).Error; err != nil {
+		return err
+	}
+	return nil
 }

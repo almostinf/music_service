@@ -59,7 +59,7 @@ func (r *userRoutes) create(c *gin.Context) {
 		LastName:  request.LastName,
 		Email:     request.Email,
 		Password:  request.Password,
-		Playlists: nil,
+		// Playlists: nil,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	})

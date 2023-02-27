@@ -7,7 +7,7 @@ import (
 	v1 "github.com/almostinf/music_service/internal/controller/http/v1"
 	"github.com/almostinf/music_service/internal/entity"
 	"github.com/almostinf/music_service/internal/infrastructure/repository"
-	user_usecase "github.com/almostinf/music_service/internal/usecase"
+	"github.com/almostinf/music_service/internal/usecase"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -21,16 +21,18 @@ func Run(cfg *config.Config) {
 	}
 
 	// Repository
-	user_rep := repository.NewUserRepository(db)
+	user_rep := repository.NewUser(db)
+	song_rep := repository.NewSong(db)
 
 	// UseCase
-	userUseCase := user_usecase.NewUser(*user_rep)
+	userUseCase := usecase.NewUser(*user_rep)
+	songUseCase := usecase.NewSong(*song_rep)
 
 	// HTTP Server
 	handler := gin.New()
-	v1.NewRouter(handler, userUseCase)
+	v1.NewRouter(handler, userUseCase, songUseCase)
 	handler.Run(":8080")
 
 	// Migrations
-	db.AutoMigrate(&entity.User{}, &entity.Song{}, &entity.Playlist{})
+	db.Debug().AutoMigrate(&entity.User{}, &entity.Song{}, &entity.Playlist{})
 }

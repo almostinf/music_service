@@ -6,7 +6,7 @@ import (
 	"github.com/almostinf/music_service/internal/infrastructure/interfaces"
 )
 
-func NewRouter(handler *gin.Engine, u interfaces.User) {
+func NewRouter(handler *gin.Engine, u interfaces.User, s interfaces.Song) {
 	// Options
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
@@ -15,5 +15,6 @@ func NewRouter(handler *gin.Engine, u interfaces.User) {
 	h := handler.Group("/v1")
 	{
 		newUserRoutes(h, u)
+		newSongRoutes(h, s)
 	}
 }
