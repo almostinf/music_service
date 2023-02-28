@@ -35,18 +35,18 @@ func (r *User) Create(user *entity.User) (*entity.User, error) {
 	}
 }
 
-func (r *User) Update(id string, user *entity.User) (*entity.User, error) {
+func (r *User) Update(id uint, user *entity.User) (*entity.User, error) {
 	var finded_user entity.User
 	if err := r.DB.First(&finded_user, "id = ?", id).Error; err != nil {
 		return user, err
 	}
-	if err := r.DB.Save(&user).Error; err != nil {
+	if err := r.DB.Save(user).Error; err != nil {
 		return user, err
 	}
 	return user, nil
 }
 
-func (r *User) Delete(id string) error {
+func (r *User) Delete(id uint) error {
 	var user entity.User
 	if err := r.DB.First(&user, "id = ?", id).Error; err != nil {
 		return err

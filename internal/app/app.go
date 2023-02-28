@@ -23,14 +23,16 @@ func Run(cfg *config.Config) {
 	// Repository
 	user_rep := repository.NewUser(db)
 	song_rep := repository.NewSong(db)
+	playlist_rep := repository.NewPlaylist(db)
 
 	// UseCase
 	userUseCase := usecase.NewUser(*user_rep)
 	songUseCase := usecase.NewSong(*song_rep)
+	playlistUseCase := usecase.NewPlaylist(*playlist_rep)
 
 	// HTTP Server
 	handler := gin.New()
-	v1.NewRouter(handler, userUseCase, songUseCase)
+	v1.NewRouter(handler, userUseCase, songUseCase, playlistUseCase)
 	handler.Run(":8080")
 
 	// Migrations

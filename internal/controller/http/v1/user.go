@@ -3,6 +3,7 @@ package v1
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -69,7 +70,7 @@ func (r *userRoutes) create(c *gin.Context) {
 }
 
 type updateUserRequest struct {
-	ID        string `json:"id" binding:"required" example:"0"`
+	ID        uint   `json:"id" binding:"required" example:"0"`
 	FirstName string `json:"first_name" binding:"required" example:"test"`
 	LastName  string `json:"last_name" binding:"required" example:"test"`
 	Email     string `json:"email" binding:"required" example:"test@test.ru"`
@@ -101,12 +102,18 @@ func (r *userRoutes) update(c *gin.Context) {
 
 func (r *userRoutes) delete(c *gin.Context) {
 	id := c.Query("id")
+
+	conv_id, err := strconv.Atoi(id)
+	if err != nil {
+		errorResponse(c, http.StatusBadRequest, "failed uint conversation")
+	}
+
 	if id == "" {
 		errorResponse(c, http.StatusBadRequest, "invalid request body")
 		return
 	}
 
-	if err := r.u.Delete(id); err != nil {
+	if err := r.u.Delete(uint(conv_id)); err != nil {
 		errorResponse(c, http.StatusInternalServerError, fmt.Sprintf("user service problems: %s", err))
 		return
 	}

@@ -21,10 +21,10 @@ func (u *Song) Create(song *entity.Song) (*entity.Song, error) {
 	return u.repo.Create(song)
 }
 
-func (u *Song) Update(id string, song *entity.Song) (*entity.Song, error) {
+func (u *Song) Update(id uint, song *entity.Song) (*entity.Song, error) {
 	return u.repo.Update(id, song)
 }
 
-func (u *Song) Delete(id string) error {
+func (u *Song) Delete(id uint) error {
 	return u.repo.Delete(id)
 }

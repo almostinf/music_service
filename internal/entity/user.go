@@ -5,11 +5,11 @@ import (
 )
 
 type CurSongInfo struct {
-	CurPlayingSongID string    `json:"cur_playing_song_id"`
+	CurPlayingSongID uint      `json:"cur_playing_song_id"`
 	Song             *Song     `gorm:"foreignkey:CurPlayingSongID"`
 	IsPlaying        bool      `json:"is_playing"`
-	PlaylistID       string    `json:"playlist_id"`
-	Playlist         *Playlist `gorm:"foreignkey:PlaylistID"`
+	PlaylistID       uint      `json:"playlist_id"`
+	Playlist         *Playlist `gorm:"foreignkey:PlaylistID; constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 type User struct {

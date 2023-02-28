@@ -35,18 +35,18 @@ func (r *Song) Create(song *entity.Song) (*entity.Song, error) {
 	}
 }
 
-func (r *Song) Update(id string, song *entity.Song) (*entity.Song, error) {
+func (r *Song) Update(id uint, song *entity.Song) (*entity.Song, error) {
 	var finded_song entity.Song
 	if err := r.DB.First(&finded_song, "id = ?", id).Error; err != nil {
 		return song, err
 	}
-	if err := r.DB.Save(&song).Error; err != nil {
+	if err := r.DB.Save(song).Error; err != nil {
 		return song, err
 	}
 	return song, nil
 }
 
-func (r *Song) Delete(id string) error {
+func (r *Song) Delete(id uint) error {
 	var song entity.Song
 	if err := r.DB.First(&song, "id = ?", id).Error; err != nil {
 		return err

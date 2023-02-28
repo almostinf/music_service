@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -67,7 +68,7 @@ func (r *songRoutes) create(c *gin.Context) {
 }
 
 type updateSongRequest struct {
-	ID       string        `json:"id" binding:"required" example:"0"`
+	ID       uint          `json:"id" binding:"required" example:"0"`
 	Title    string        `json:"title" binding:"required" example:"world"`
 	Artist   string        `json:"artist" binding:"required" example:"hello"`
 	Duration time.Duration `json:"duration" binding:"required" example:"01:02:05"`
@@ -81,10 +82,10 @@ func (r *songRoutes) update(c *gin.Context) {
 	}
 
 	song, err := r.u.Update(request.ID, &entity.Song{
-		Model:     gorm.Model{},
-		Title:     request.Title,
-		Artist:    request.Artist,
-		Duration:  request.Duration,
+		Model:    gorm.Model{},
+		Title:    request.Title,
+		Artist:   request.Artist,
+		Duration: request.Duration,
 	})
 
 	if err != nil {
@@ -97,12 +98,17 @@ func (r *songRoutes) update(c *gin.Context) {
 
 func (r *songRoutes) delete(c *gin.Context) {
 	id := c.Query("id")
+	conv_id, err := strconv.Atoi(id)
+	if err != nil {
+		errorResponse(c, http.StatusBadRequest, "failed uint conversation")
+	}
+
 	if id == "" {
 		errorResponse(c, http.StatusBadRequest, "invalid request body")
 		return
 	}
 
-	if err := r.u.Delete(id); err != nil {
+	if err := r.u.Delete(uint(conv_id)); err != nil {
 		errorResponse(c, http.StatusInternalServerError, fmt.Sprintf("song service problems: %s", err))
 		return
 	}
