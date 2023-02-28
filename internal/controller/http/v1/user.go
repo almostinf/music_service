@@ -3,10 +3,8 @@ package v1
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 
 	"github.com/almostinf/music_service/internal/entity"
@@ -54,14 +52,12 @@ func (r *userRoutes) create(c *gin.Context) {
 
 	user, err := r.u.Create(&entity.User{
 		Model:     gorm.Model{},
-		ID:        uuid.New().String(),
 		FirstName: request.FirstName,
 		LastName:  request.LastName,
 		Email:     request.Email,
 		Password:  request.Password,
-		// Playlists: nil,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CurSong:   nil,
+		Playlists: make([]*entity.Playlist, 0),
 	})
 
 	if err != nil {
@@ -87,16 +83,12 @@ func (r *userRoutes) update(c *gin.Context) {
 		return
 	}
 
-	user, err := r.u.Update(&entity.User{
+	user, err := r.u.Update(request.ID, &entity.User{
 		Model:     gorm.Model{},
-		ID:        request.ID,
 		FirstName: request.FirstName,
 		LastName:  request.LastName,
 		Email:     request.Email,
 		Password:  request.Password,
-		Playlists: nil,
-		UpdatedAt: time.Now(),
-		// CreatedAt: ... TODO
 	})
 
 	if err != nil {

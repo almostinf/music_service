@@ -21,8 +21,8 @@ func (u *User) Create(user *entity.User) (*entity.User, error) {
 	return u.repo.Create(user)
 }
 
-func (u *User) Update(user *entity.User) (*entity.User, error) {
-	return u.repo.Update(user)
+func (u *User) Update(id string, user *entity.User) (*entity.User, error) {
+	return u.repo.Update(id, user)
 }
 
 func (u *User) Delete(id string) error {

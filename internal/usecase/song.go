@@ -21,8 +21,8 @@ func (u *Song) Create(song *entity.Song) (*entity.Song, error) {
 	return u.repo.Create(song)
 }
 
-func (u *Song) Update(song *entity.Song) (*entity.Song, error) {
-	return u.repo.Update(song)
+func (u *Song) Update(id string, song *entity.Song) (*entity.Song, error) {
+	return u.repo.Update(id, song)
 }
 
 func (u *Song) Delete(id string) error {

@@ -21,7 +21,9 @@ func (r *User) Get() []entity.User {
 
 func (r *User) Create(user *entity.User) (*entity.User, error) {
 	if err := r.DB.Migrator().HasTable(user); !err {
-		r.DB.Migrator().CreateTable(user)
+		if err := r.DB.Debug().Migrator().CreateTable(user); err != nil {
+			return user, err
+		}
 	}
 	if err := r.DB.First(user, "id = ?", user.ID).Error; err != nil {
 		if err := r.DB.Create(user).Error; err != nil {
@@ -33,9 +35,9 @@ func (r *User) Create(user *entity.User) (*entity.User, error) {
 	}
 }
 
-func (r *User) Update(user *entity.User) (*entity.User, error) {
+func (r *User) Update(id string, user *entity.User) (*entity.User, error) {
 	var finded_user entity.User
-	if err := r.DB.First(&finded_user, "id = ?", user.ID).Error; err != nil {
+	if err := r.DB.First(&finded_user, "id = ?", id).Error; err != nil {
 		return user, err
 	}
 	if err := r.DB.Save(&user).Error; err != nil {

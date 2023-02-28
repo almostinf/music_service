@@ -21,7 +21,9 @@ func (r *Song) Get() []entity.Song {
 
 func (r *Song) Create(song *entity.Song) (*entity.Song, error) {
 	if err := r.DB.Migrator().HasTable(song); !err {
-		r.DB.Migrator().CreateTable(song)
+		if err := r.DB.Debug().Migrator().CreateTable(song); err != nil {
+			return song, err
+		}
 	}
 	if err := r.DB.First(song, "id = ?", song.ID).Error; err != nil {
 		if err := r.DB.Create(song).Error; err != nil {
@@ -33,9 +35,9 @@ func (r *Song) Create(song *entity.Song) (*entity.Song, error) {
 	}
 }
 
-func (r *Song) Update(song *entity.Song) (*entity.Song, error) {
+func (r *Song) Update(id string, song *entity.Song) (*entity.Song, error) {
 	var finded_song entity.Song
-	if err := r.DB.First(&finded_song, "id = ?", song.ID).Error; err != nil {
+	if err := r.DB.First(&finded_song, "id = ?", id).Error; err != nil {
 		return song, err
 	}
 	if err := r.DB.Save(&song).Error; err != nil {

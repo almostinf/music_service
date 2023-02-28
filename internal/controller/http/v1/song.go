@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 
 	"github.com/almostinf/music_service/internal/entity"
@@ -53,12 +52,10 @@ func (r *songRoutes) create(c *gin.Context) {
 
 	song, err := r.u.Create(&entity.Song{
 		Model:     gorm.Model{},
-		ID:        uuid.New().String(),
 		Title:     request.Title,
 		Artist:    request.Artist,
 		Duration:  request.Duration,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		Playlists: make([]*entity.Playlist, 0),
 	})
 
 	if err != nil {
@@ -83,14 +80,11 @@ func (r *songRoutes) update(c *gin.Context) {
 		return
 	}
 
-	song, err := r.u.Update(&entity.Song{
+	song, err := r.u.Update(request.ID, &entity.Song{
 		Model:     gorm.Model{},
-		ID:        request.ID,
 		Title:     request.Title,
 		Artist:    request.Artist,
 		Duration:  request.Duration,
-		// CreatedAt: ... TODO
-		UpdatedAt: time.Now(),
 	})
 
 	if err != nil {

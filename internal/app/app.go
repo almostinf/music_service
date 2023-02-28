@@ -34,5 +34,7 @@ func Run(cfg *config.Config) {
 	handler.Run(":8080")
 
 	// Migrations
-	db.Debug().AutoMigrate(&entity.User{}, &entity.Song{}, &entity.Playlist{})
+	if err := db.Debug().AutoMigrate(&entity.User{}, &entity.Song{}, &entity.Playlist{}); err != nil {
+		log.Fatal("Could not automigrate")
+	}
 }
