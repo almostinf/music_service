@@ -28,3 +28,23 @@ func (u *Playlist) Update(id uint, playlist *entity.Playlist) (*entity.Playlist,
 func (u *Playlist) Delete(id uint) error {
 	return u.repo.Delete(id)
 }
+
+func (u *Playlist) Play(user_id uint, song_id uint, playlist_id uint) error {
+	return u.repo.Play(user_id, song_id, playlist_id)
+}
+
+func (u *Playlist) Pause(user_id uint, song_id uint, playlist_id uint) error {
+	return u.repo.Pause(user_id, song_id, playlist_id)
+}
+
+func (u *Playlist) AddSong(user_id uint, song_id uint, playlist_id uint) error {
+	return u.repo.AddSong(user_id, song_id, playlist_id)
+}
+
+func (u *Playlist) Next(user_id uint, song_id uint, playlist_id uint) error {
+	return u.repo.Next(user_id, song_id, playlist_id)
+}
+
+func (u *Playlist) Prev(user_id uint, song_id uint, playlist_id uint) error {
+	return u.repo.Prev(user_id, song_id, playlist_id)
+}

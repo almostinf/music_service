@@ -56,7 +56,7 @@ func (r *songRoutes) create(c *gin.Context) {
 		Title:     request.Title,
 		Artist:    request.Artist,
 		Duration:  request.Duration,
-		Playlists: make([]*entity.Playlist, 0),
+		Playlists: make([]entity.Playlist, 0),
 	})
 
 	if err != nil {

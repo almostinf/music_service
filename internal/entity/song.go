@@ -11,5 +11,5 @@ type Song struct {
 	Title     string        `json:"title" gorm:"type:text"`
 	Artist    string        `json:"artist" gorm:"type:varchar(64)"`
 	Duration  time.Duration `json:"duration" gorm:"not null"`
-	Playlists []*Playlist   `gorm:"many2many:playlist_songs;"`
+	Playlists []Playlist    `gorm:"many2many:playlist_songs;"`
 }

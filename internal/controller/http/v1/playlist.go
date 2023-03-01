@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -25,6 +26,11 @@ func newplaylistRoutes(handler *gin.RouterGroup, u interfaces.Playlist) {
 		h.POST("/", r.create)
 		h.PUT("/", r.update)
 		h.DELETE("/", r.delete)
+		h.PUT("/play", r.play)
+		h.PUT("/pause", r.pause)
+		h.PUT("/add_song", r.addSong)
+		h.PUT("/next", r.next)
+		h.PUT("/prev", r.prev)
 	}
 }
 
@@ -54,8 +60,8 @@ func (r *playlistRoutes) create(c *gin.Context) {
 		Model:     gorm.Model{},
 		Name:      request.Name,
 		Title:     request.Title,
-		HeadSong:  nil,
-		TailSong:  nil,
+		HeadSong:  entity.SongNode{},
+		TailSong:  entity.SongNode{},
 		CreatorID: request.CreatorID,
 	})
 
@@ -102,12 +108,100 @@ func (r *playlistRoutes) delete(c *gin.Context) {
 		errorResponse(c, http.StatusBadRequest, "failed uint conversation")
 	}
 
-	if id == "" {
-		errorResponse(c, http.StatusBadRequest, "invalid request body")
+	if err := r.u.Delete(uint(conv_id)); err != nil {
+		errorResponse(c, http.StatusInternalServerError, fmt.Sprintf("playlist service problems: %s", err))
 		return
 	}
 
-	if err := r.u.Delete(uint(conv_id)); err != nil {
+	c.Status(http.StatusOK)
+}
+
+func (r *playlistRoutes) getUserSongPlaylist(c *gin.Context) (uint, uint, uint, error) {
+	user_id := c.Query("user_id")
+	song_id := c.Query("song_id")
+	playlist_id := c.Query("playlist_id")
+
+	conv_user_id, err := strconv.Atoi(user_id)
+	if err != nil {
+		return 0, 0, 0, errors.New("failed uint conversation")
+	}
+
+	conv_song_id, err := strconv.Atoi(song_id)
+	if err != nil {
+		return 0, 0, 0, errors.New("failed uint conversation")
+	}
+
+	conv_playlist_id, err := strconv.Atoi(playlist_id)
+	if err != nil {
+		return 0, 0, 0, errors.New("failed uint conversation")
+	}
+
+	return uint(conv_user_id), uint(conv_song_id), uint(conv_playlist_id), nil
+}
+
+func (r *playlistRoutes) play(c *gin.Context) {
+	user_id, song_id, playlist_id, err := r.getUserSongPlaylist(c)
+	if err != nil {
+		errorResponse(c, http.StatusBadRequest, err.Error())
+	}
+
+	if err := r.u.Play(uint(user_id), uint(song_id), uint(playlist_id)); err != nil {
+		errorResponse(c, http.StatusInternalServerError, fmt.Sprintf("playlist service problems: %s", err))
+		return
+	}
+
+	c.Status(http.StatusOK)
+}
+
+func (r *playlistRoutes) pause(c *gin.Context) {
+	user_id, song_id, playlist_id, err := r.getUserSongPlaylist(c)
+	if err != nil {
+		errorResponse(c, http.StatusBadRequest, err.Error())
+	}
+
+	if err := r.u.Pause(uint(user_id), uint(song_id), uint(playlist_id)); err != nil {
+		errorResponse(c, http.StatusInternalServerError, fmt.Sprintf("playlist service problems: %s", err))
+		return
+	}
+
+	c.Status(http.StatusOK)
+}
+
+func (r *playlistRoutes) addSong(c *gin.Context) {
+	user_id, song_id, playlist_id, err := r.getUserSongPlaylist(c)
+	if err != nil {
+		errorResponse(c, http.StatusBadRequest, err.Error())
+	}
+
+	if err := r.u.AddSong(uint(user_id), uint(song_id), uint(playlist_id)); err != nil {
+		errorResponse(c, http.StatusInternalServerError, fmt.Sprintf("playlist service problems: %s", err))
+		return
+	}
+
+	c.Status(http.StatusOK)
+}
+
+func (r *playlistRoutes) next(c *gin.Context) {
+	user_id, song_id, playlist_id, err := r.getUserSongPlaylist(c)
+	if err != nil {
+		errorResponse(c, http.StatusBadRequest, err.Error())
+	}
+
+	if err := r.u.Next(uint(user_id), uint(song_id), uint(playlist_id)); err != nil {
+		errorResponse(c, http.StatusInternalServerError, fmt.Sprintf("playlist service problems: %s", err))
+		return
+	}
+
+	c.Status(http.StatusOK)
+}
+
+func (r *playlistRoutes) prev(c *gin.Context) {
+	user_id, song_id, playlist_id, err := r.getUserSongPlaylist(c)
+	if err != nil {
+		errorResponse(c, http.StatusBadRequest, err.Error())
+	}
+
+	if err := r.u.Prev(uint(user_id), uint(song_id), uint(playlist_id)); err != nil {
 		errorResponse(c, http.StatusInternalServerError, fmt.Sprintf("playlist service problems: %s", err))
 		return
 	}

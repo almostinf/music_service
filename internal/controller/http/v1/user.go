@@ -57,8 +57,8 @@ func (r *userRoutes) create(c *gin.Context) {
 		LastName:  request.LastName,
 		Email:     request.Email,
 		Password:  request.Password,
-		CurSong:   nil,
-		Playlists: make([]*entity.Playlist, 0),
+		CurSong:   entity.CurSongInfo{},
+		Playlists: make([]entity.Playlist, 0),
 	})
 
 	if err != nil {
