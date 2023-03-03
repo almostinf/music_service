@@ -6,11 +6,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
-
 	"github.com/almostinf/music_service/internal/entity"
 	"github.com/almostinf/music_service/internal/infrastructure/interfaces"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // The userRoutes struct is defined to hold a user service that
@@ -63,13 +62,13 @@ func (r *userRoutes) create(c *gin.Context) {
 	}
 
 	user, err := r.u.Create(&entity.User{
-		Model:     gorm.Model{},
-		FirstName: request.FirstName,
-		LastName:  request.LastName,
-		Email:     request.Email,
-		Password:  request.Password,
-		CurSongInfoID:   0,
-		Playlists: make([]int64, 0),
+		Model:         gorm.Model{},
+		FirstName:     request.FirstName,
+		LastName:      request.LastName,
+		Email:         request.Email,
+		Password:      request.Password,
+		CurSongInfoID: 0,
+		Playlists:     make([]int64, 0),
 	})
 
 	if err != nil {

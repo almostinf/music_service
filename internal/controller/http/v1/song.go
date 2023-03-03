@@ -4,14 +4,13 @@ package v1
 import (
 	"fmt"
 	"net/http"
-	"time"
 	"strconv"
-
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
+	"time"
 
 	"github.com/almostinf/music_service/internal/entity"
 	"github.com/almostinf/music_service/internal/infrastructure/interfaces"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // The songRoutes struct is defined to hold a song service that

@@ -33,10 +33,12 @@ func Run(cfg *config.Config) {
 	// HTTP Server
 	handler := gin.New()
 	v1.NewRouter(handler, userUseCase, songUseCase, playlistUseCase)
-	handler.Run(":8080")
+	if err := handler.Run(":8080"); err != nil {
+		log.Fatal("Can not run server on specified port")
+	}
 
 	// Migrations
 	if err := db.Debug().AutoMigrate(&entity.User{}, &entity.Song{}, &entity.Playlist{}, &entity.SongNode{}, &entity.CurSongInfo{}); err != nil {
-		log.Fatal("Could not automigrate")
+		log.Fatal("Can not automigrate")
 	}
 }

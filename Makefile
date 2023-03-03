@@ -2,7 +2,7 @@ CURDIR=$(shell pwd)
 BINDIR=${CURDIR}/bin
 GOVER=$(shell go version | perl -nle '/(go\d\S+)/; print $$1;')
 SMARTIMPORTS=${BINDIR}/smartimports_${GOVER}
-LINTVER=v1.49.0
+LINTVER=v1.51.2
 LINTBIN=${BINDIR}/lint_${GOVER}_${LINTVER}
 
 all: format build test lint
@@ -39,7 +39,7 @@ install-smartimports: bindir
 		mv ${BINDIR}/smartimports ${SMARTIMPORTS})
 
 compose-up:
-	docker-compose up -d
+	sudo docker-compose up -d
 
 compose-down:
-	docker-compose down --remove-orphans
+	sudo docker-compose down --remove-orphans

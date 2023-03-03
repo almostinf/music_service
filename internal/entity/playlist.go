@@ -5,7 +5,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// This struct defines a song node entity that represents a single node 
+// This struct defines a song node entity that represents a single node
 // in a double-linked playlist.
 type SongNode struct {
 	gorm.Model
@@ -15,7 +15,7 @@ type SongNode struct {
 	Song       *Song `json:"-" gorm:"foreignkey:SongID"`
 }
 
-// This struct represents a double-linked playlist entity with additional 
+// This struct represents a double-linked playlist entity with additional
 // information about name, title and creator id.
 type Playlist struct {
 	gorm.Model

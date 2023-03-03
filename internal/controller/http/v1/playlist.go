@@ -7,11 +7,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
-
 	"github.com/almostinf/music_service/internal/entity"
 	"github.com/almostinf/music_service/internal/infrastructure/interfaces"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // The playlistRoutes struct is defined to hold a playlist service that

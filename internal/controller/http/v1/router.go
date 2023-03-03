@@ -1,9 +1,8 @@
 package v1
 
 import (
-	"github.com/gin-gonic/gin"
-
 	"github.com/almostinf/music_service/internal/infrastructure/interfaces"
+	"github.com/gin-gonic/gin"
 )
 
 // Creates a new Router of user, song and playlist routes
