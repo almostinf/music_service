@@ -1,0 +1,9 @@
+app:
+  name: 'music-service'
+  version: '0.1.0'
+
+http:
+  port: '8080'
+
+postgres:
+  dialect: 'postgres'
