@@ -1,3 +1,5 @@
+// This code implements a Go package that provides methods to interact 
+// with entities.
 package usecase
 
 import (
@@ -5,10 +7,13 @@ import (
 	"github.com/almostinf/music_service/internal/infrastructure/repository"
 )
 
+// This code defines a use case struct called Song that provides 
+// methods to interact with songs in a music service application.
 type Song struct {
 	repo repository.Song
 }
 
+// Create a new song entity with DI
 func NewSong(r repository.Song) *Song {
 	return &Song{r}
 }

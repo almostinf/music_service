@@ -1,3 +1,6 @@
+// This code implements a Go package that interacts with a database
+// and provides CRUD operations for entities. The package uses
+// the Gorm ORM to connect to the database.
 package repository
 
 import (
@@ -9,27 +12,36 @@ import (
 	"gorm.io/gorm"
 )
 
+// The Playlist type wraps a *gorm.DB object and has nine methods:
+// Get, Create, Update, Delete and others which provide basic CRUD functionality
+// for the Playlist entity.
 type Playlist struct {
 	*gorm.DB
 }
 
+// Crates a new instance of playlist with DI.
 func NewPlaylist(db *gorm.DB) *Playlist {
 	return &Playlist{db}
 }
 
+// The Get method retrieves all the playlists from the database.
 func (r *Playlist) Get() []entity.Playlist {
 	var playlists []entity.Playlist
 	r.Find(&playlists)
 	return playlists
 }
 
+// The Create method creates a new playlist in the database and
+// updates the user entity that created the playlist.
 func (r *Playlist) Create(playlist *entity.Playlist) (*entity.Playlist, error) {
+	// Check if the playlist table exist
 	if err := r.DB.Migrator().HasTable(playlist); !err {
 		if err := r.DB.Debug().Migrator().CreateTable(playlist); err != nil {
 			return playlist, err
 		}
 	}
 
+	// Try to find the playlist in database by id
 	if err := r.DB.First(playlist, "id = ?", playlist.ID).Error; err != nil {
 		if err := r.DB.Model(&entity.Playlist{}).Create(playlist).Error; err != nil {
 			return playlist, err
@@ -53,28 +65,33 @@ func (r *Playlist) Create(playlist *entity.Playlist) (*entity.Playlist, error) {
 	}
 }
 
+// The Update method updates an existing playlist.
 func (r *Playlist) Update(id uint, playlist *entity.Playlist) (*entity.Playlist, error) {
-	var finded_playlist entity.Playlist
-	if err := r.DB.First(&finded_playlist, "id = ?", id).Error; err != nil {
+	// Update playlist entity in database
+	if err := r.DB.Model(&entity.Playlist{}).Where("id = ?", id).Updates(playlist).Error; err != nil {
 		return playlist, err
 	}
-	if err := r.DB.Save(playlist).Error; err != nil {
-		return playlist, err
-	}
+
 	return playlist, nil
 }
 
+// The Delete method deletes a playlist from the database.
 func (r *Playlist) Delete(id uint) error {
+	// Try to find a playlist entity by id
 	var playlist entity.Playlist
 	if err := r.DB.First(&playlist, "id = ?", id).Error; err != nil {
 		return err
 	}
+
+	// Delete playlist from database
 	if err := r.DB.Delete(&playlist).Error; err != nil {
 		return err
 	}
+
 	return nil
 }
 
+// Checks if the user has the specified playlist
 func findPlaylist(user *entity.User, playlist_id uint) bool {
 	for _, playlist := range user.Playlists {
 		if playlist == int64(playlist_id) {
@@ -84,11 +101,15 @@ func findPlaylist(user *entity.User, playlist_id uint) bool {
 	return false
 }
 
+// Checks if the specified song is on the playlist
 func (r *Playlist) findSongInPlaylist(playlist *entity.Playlist, song_id uint) bool {
+	// Try to find SongNode by playlist.HeadSong id
 	var curNode entity.SongNode
 	if err := r.DB.Model(&entity.SongNode{}).First(&curNode, playlist.HeadSong).Error; err != nil {
 		return false
 	}
+
+	// Goes through the list and looks for a song with a given ID
 	for curNode.ID != playlist.TailSong && curNode.ID != 0 {
 		if curNode.SongID == song_id {
 			return true
@@ -99,17 +120,19 @@ func (r *Playlist) findSongInPlaylist(playlist *entity.Playlist, song_id uint) b
 		}
 		curNode = nextSongNode
 	}
+
 	return curNode.SongID == song_id
 }
 
+// Returns entities with specified IDs
 func (r *Playlist) getEntitiesByID(user_id uint, song_id uint, playlist_id uint) (*entity.User, *entity.Song, *entity.Playlist, error) {
-	// Retrieve the playlist from the database
+	// Try to retrieve the playlist from the database
 	playlist := &entity.Playlist{}
 	if err := r.Model(&entity.Playlist{}).First(playlist, playlist_id).Error; err != nil {
 		return nil, nil, nil, errors.New("failed to retrieve playlist from database")
 	}
 
-	// Retrieve the user from the database
+	// Try to retrieve the user from the database
 	user := &entity.User{}
 	if err := r.Model(&entity.User{}).First(user, user_id).Error; err != nil {
 		return nil, nil, nil, errors.New("failed to retrieve user from database")
@@ -120,7 +143,7 @@ func (r *Playlist) getEntitiesByID(user_id uint, song_id uint, playlist_id uint)
 		return nil, nil, nil, errors.New("user doesn't have that playlist")
 	}
 
-	// Retrieve the song from the database
+	// Try to retrieve the song from the database
 	song := &entity.Song{}
 	if err := r.Model(&entity.Song{}).First(song, song_id).Error; err != nil {
 		return nil, nil, nil, errors.New("failed to retrieve song from database")
@@ -129,7 +152,9 @@ func (r *Playlist) getEntitiesByID(user_id uint, song_id uint, playlist_id uint)
 	return user, song, playlist, nil
 }
 
+// Play song with specified ID
 func (r *Playlist) Play(user_id uint, song_id uint, playlist_id uint) error {
+	// Get user, song and playlist entities by their id
 	user, song, playlist, err := r.getEntitiesByID(user_id, song_id, playlist_id)
 	if err != nil {
 		return err
@@ -140,6 +165,7 @@ func (r *Playlist) Play(user_id uint, song_id uint, playlist_id uint) error {
 		return errors.New("playlist doesn't contain this song")
 	}
 
+	// Try to find current playing song
 	var curSong entity.CurSongInfo
 	if err := r.DB.Model(&entity.CurSongInfo{}).Find(&curSong, user.CurSongInfoID).Error; err != nil {
 		return err
@@ -150,6 +176,7 @@ func (r *Playlist) Play(user_id uint, song_id uint, playlist_id uint) error {
 	curSong.IsPlaying = true
 	curSong.PlaylistID = playlist_id
 
+	// Updates current playing song information
 	if err := r.DB.Model(&entity.CurSongInfo{}).Where("id = ?", user.CurSongInfoID).Updates(&curSong).Error; err != nil {
 		return err
 	}
@@ -165,7 +192,9 @@ func (r *Playlist) Play(user_id uint, song_id uint, playlist_id uint) error {
 	return nil
 }
 
+// Pause song with specified ID
 func (r *Playlist) Pause(user_id uint, song_id uint, playlist_id uint) error {
+	// Get user and playlist entities by their id
 	user, _, playlist, err := r.getEntitiesByID(user_id, song_id, playlist_id)
 	if err != nil {
 		return err
@@ -176,11 +205,13 @@ func (r *Playlist) Pause(user_id uint, song_id uint, playlist_id uint) error {
 		return errors.New("playlist doesn't contain this song")
 	}
 
+	// Try to find current playing song
 	var curSong entity.CurSongInfo
 	if err := r.DB.Model(&entity.CurSongInfo{}).Find(&curSong, user.CurSongInfoID).Error; err != nil {
 		return err
 	}
 
+	// Updates current playing song information
 	if err := r.DB.Model(&entity.CurSongInfo{}).Where("id = ?", user.CurSongInfoID).Select("is_playing").Updates(map[string]interface{}{"is_playing": false}).Error; err != nil {
 		return err
 	}
@@ -188,13 +219,15 @@ func (r *Playlist) Pause(user_id uint, song_id uint, playlist_id uint) error {
 	return nil
 }
 
+// Add song to the playlist with specifies song ID
 func (r *Playlist) AddSong(user_id uint, song_id uint, playlist_id uint) error {
+	// Get playlist entity by id
 	_, _, playlist, err := r.getEntitiesByID(user_id, song_id, playlist_id)
 	if err != nil {
 		return err
 	}
 
-	// create a new SongNode with the given song_id
+	// Create a new SongNode with the given song_id
 	songNode := &entity.SongNode{SongID: song_id, NextSongID: 0, PrevSongID: 0}
 
 	// Check if SongNode's table exist
@@ -204,6 +237,7 @@ func (r *Playlist) AddSong(user_id uint, song_id uint, playlist_id uint) error {
 		}
 	}
 
+	// Try to find SongNode by song_id and if it wasn't find, create it
 	if err := r.DB.Model(&entity.SongNode{}).Where("song_id = ?", song_id).First(songNode).Error; err != nil {
 		if err := r.DB.Model(&entity.SongNode{}).Create(songNode).Error; err != nil {
 			return err
@@ -217,6 +251,7 @@ func (r *Playlist) AddSong(user_id uint, song_id uint, playlist_id uint) error {
 			return err
 		}
 
+		// Updates tailsong information in database
 		tailsong.NextSongID = songNode.ID
 		if err := r.DB.Model(&entity.SongNode{}).Where("id = ?", playlist.TailSong).Updates(&tailsong).Error; err != nil {
 			return err
@@ -246,12 +281,15 @@ func (r *Playlist) AddSong(user_id uint, song_id uint, playlist_id uint) error {
 	return nil
 }
 
+// Returns next song ID
 func (r *Playlist) findNextSongInPlaylist(playlist *entity.Playlist, song_id uint) (uint, error) {
+	// Try to find current SongNode by playlist.HeadSong id
 	var curSongNode entity.SongNode
 	if err := r.DB.Model(&entity.SongNode{}).First(&curSongNode, playlist.HeadSong).Error; err != nil {
 		return 0, err
 	}
 
+	// Goes through the list and looks for a song with a given ID
 	for curSongNode.ID != playlist.TailSong && curSongNode.ID != 0 {
 		if curSongNode.SongID == song_id {
 			if curSongNode.NextSongID != 0 {
@@ -263,10 +301,13 @@ func (r *Playlist) findNextSongInPlaylist(playlist *entity.Playlist, song_id uin
 			}
 			return 0, errors.New("can't find next song in playlist")
 		}
+
+		// Try to find next SongNode
 		var nextSongNode entity.SongNode
 		if err := r.DB.Model(&entity.SongNode{}).First(&nextSongNode, curSongNode.NextSongID).Error; err != nil {
 			return 0, errors.New("can't find next song in playlist")
 		}
+
 		curSongNode = nextSongNode
 	}
 
@@ -283,7 +324,9 @@ func (r *Playlist) findNextSongInPlaylist(playlist *entity.Playlist, song_id uin
 	return 0, errors.New("can't find given song in playlist")
 }
 
+// Play next song in the playlist
 func (r *Playlist) Next(user_id uint, song_id uint, playlist_id uint) error {
+	// Get playlist entity by id
 	_, _, playlist, err := r.getEntitiesByID(user_id, song_id, playlist_id)
 	if err != nil {
 		return err
@@ -294,11 +337,13 @@ func (r *Playlist) Next(user_id uint, song_id uint, playlist_id uint) error {
 		return errors.New("playlist doesn't contain this song")
 	}
 
+	// Try to get next song to play
 	next_song_id, err := r.findNextSongInPlaylist(playlist, song_id)
 	if err != nil {
 		return err
 	}
 
+	// Play finded song
 	if err = r.Play(user_id, next_song_id, playlist_id); err != nil {
 		return err
 	}
@@ -306,11 +351,15 @@ func (r *Playlist) Next(user_id uint, song_id uint, playlist_id uint) error {
 	return nil
 }
 
+// Returns previous song
 func (r *Playlist) findPrevSongInPlaylist(playlist *entity.Playlist, song_id uint) (uint, error) {
+	// Try to find current SongNode by playlist.HeadSong id
 	var curSongNode entity.SongNode
 	if err := r.DB.Model(&entity.SongNode{}).First(&curSongNode, playlist.HeadSong).Error; err != nil {
 		return 0, err
 	}
+
+	// Goes through the list and looks for a song with a given ID
 	for curSongNode.ID != playlist.TailSong && curSongNode.ID != 0 {
 		if curSongNode.SongID == song_id {
 			if curSongNode.PrevSongID != 0 {
@@ -322,12 +371,16 @@ func (r *Playlist) findPrevSongInPlaylist(playlist *entity.Playlist, song_id uin
 			}
 			return 0, errors.New("can't find previous song in playlist")
 		}
+
+		// Try to find next SongNode
 		var nextSongNode entity.SongNode
 		if err := r.DB.Model(&entity.SongNode{}).First(&nextSongNode, curSongNode.NextSongID).Error; err != nil {
 			return 0, errors.New("can't find next song in playlist")
 		}
+
 		curSongNode = nextSongNode
 	}
+
 	if curSongNode.ID != 0 && curSongNode.SongID == song_id {
 		if curSongNode.PrevSongID != 0 {
 			var prevSong entity.SongNode
@@ -338,10 +391,13 @@ func (r *Playlist) findPrevSongInPlaylist(playlist *entity.Playlist, song_id uin
 		}
 		return 0, errors.New("can't find previous song in playlist")
 	}
+
 	return 0, errors.New("can't find given song in playlist")
 }
 
+// Play previous song in the playlist
 func (r *Playlist) Prev(user_id uint, song_id uint, playlist_id uint) error {
+	// Get playlist entity by id
 	_, _, playlist, err := r.getEntitiesByID(user_id, song_id, playlist_id)
 	if err != nil {
 		return err
@@ -352,11 +408,13 @@ func (r *Playlist) Prev(user_id uint, song_id uint, playlist_id uint) error {
 		return errors.New("playlist doesn't contain this song")
 	}
 
+	// Try to get previous song to play
 	prev_song_id, err := r.findPrevSongInPlaylist(playlist, song_id)
 	if err != nil {
 		return err
 	}
 
+	// Play finded song
 	if err = r.Play(user_id, prev_song_id, playlist_id); err != nil {
 		return err
 	}

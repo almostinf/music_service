@@ -1,3 +1,6 @@
+// This code defines a configuration struct named "Config" and reads 
+// the configuration values from both a YAML file and environment 
+// variables using the "cleanenv" package.
 package config
 
 import (
@@ -6,6 +9,10 @@ import (
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
+// The "Config" struct has three nested structs: "App" containing 
+// the application name and version, "HTTP" containing the HTTP port 
+// to be used by the application, and "PG" containing the dialect and 
+// URL for the PostgreSQL database.
 type (
 	Config struct {
 		App  `yaml:"app"`
@@ -28,6 +35,8 @@ type (
 	}
 )
 
+// Creates a new config entity after reading the configuration values 
+// from the YAML file and environment variables.
 func NewConfig() (*Config, error) {
 	cfg := &Config{}
 
