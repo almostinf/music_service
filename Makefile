@@ -7,6 +7,9 @@ LINTBIN=${BINDIR}/lint_${GOVER}_${LINTVER}
 
 all: format build test lint
 
+# ==============================================================================
+# Main
+
 build: bindir
 	go build -o ${BINDIR}/app github.com/almostinf/music_service/cmd/app
 
@@ -15,6 +18,9 @@ test:
 
 run:
 	go run github.com/almostinf/music_service/cmd/app
+
+# ==============================================================================
+# Tools commands
 
 lint: install-lint
 	${LINTBIN} run
@@ -37,6 +43,9 @@ install-smartimports: bindir
 	test -f ${SMARTIMPORTS} || \
 		(GOBIN=${BINDIR} go install github.com/pav5000/smartimports/cmd/smartimports@latest && \
 		mv ${BINDIR}/smartimports ${SMARTIMPORTS})
+
+# ==============================================================================
+# Docker compose commands
 
 compose-up:
 	sudo docker-compose up -d
