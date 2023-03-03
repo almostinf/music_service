@@ -1,3 +1,4 @@
+// Package entity defines the data structures used in the application.
 package entity
 
 import (
@@ -6,6 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// The Song struct defines the properties of a music song entity in the system.
 type Song struct {
 	gorm.Model
 	Title     string        `json:"title" gorm:"type:text"`

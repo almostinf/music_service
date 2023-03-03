@@ -6,6 +6,7 @@ import (
 	"github.com/almostinf/music_service/internal/infrastructure/interfaces"
 )
 
+// Creates a new Router of user, song and playlist routes
 func NewRouter(handler *gin.Engine, u interfaces.User, s interfaces.Song, p interfaces.Playlist) {
 	// Options
 	handler.Use(gin.Logger())

@@ -20,6 +20,19 @@ func (r *User) Get() []entity.User {
 }
 
 func (r *User) Create(user *entity.User) (*entity.User, error) {
+	var curSong entity.CurSongInfo
+	if err := r.DB.Migrator().HasTable(&curSong); !err {
+		if err := r.DB.Debug().Migrator().CreateTable(&curSong); err != nil {
+			return user, err
+		}
+	}
+
+	if err := r.DB.Model(&entity.CurSongInfo{}).Create(&curSong).Error; err != nil {
+		return user, err
+	}
+
+	user.CurSongInfoID = curSong.ID
+
 	if err := r.DB.Migrator().HasTable(user); !err {
 		if err := r.DB.Debug().Migrator().CreateTable(user); err != nil {
 			return user, err

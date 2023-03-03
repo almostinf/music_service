@@ -1,16 +1,16 @@
 version: '3.5'
 
 services:
-  app:
-    build: .
-    container_name: app
-    image: app
-    environment:
-      PG_URL: 'postgres://admin:root@postgres:5432/postgres'
-    ports:
-      - 8080:8080
-    depends_on:
-      - postgres
+  # app:
+  #   build: .
+  #   container_name: app
+  #   image: app
+  #   environment:
+  #     PG_URL: 'postgres://admin:root@postgres:5432/postgres'
+  #   ports:
+  #     - 8080:8080
+  #   depends_on:
+  #     - postgres
 
   postgres:
     container_name: postgres_db
